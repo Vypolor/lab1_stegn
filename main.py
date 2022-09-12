@@ -28,17 +28,17 @@ def svi1_decode(encode_image, first_bit_place_number, second_bit_place_number
     return first_bit_place ^ second_bit_place
 
 
-def svi1_encode(original_image, water_mark, color_channel, bit_plate_number,
-                second_color_image, second_bit_plate_number):
+def svi1_encode(original_image, water_mark_image, color_channel_string, bit_plate_number,
+                second_channel_string, second_bit_plate_number):
 
     clear_bit_place = 255 - (2 ** (bit_plate_number - 1))
 
-    prepared_watermark_colored = ((water_mark / 255) * (2 ** (bit_plate_number - 1))).astype(np.uint8)
-    binary_watermark = get_channel(prepared_watermark_colored, color_channel)
-    channel_with_empty_bit_place = get_channel(original_image, color_channel) & clear_bit_place
+    prepared_watermark_colored = ((water_mark_image / 255) * (2 ** (bit_plate_number - 1))).astype(np.uint8)
+    binary_watermark = get_channel(prepared_watermark_colored, color_channel_string)
+    channel_with_empty_bit_place = get_channel(original_image, color_channel_string) & clear_bit_place
     channel_with_watermark = channel_with_empty_bit_place | binary_watermark
 
-    second_channel = get_channel(baboon, second_color_image)
+    second_channel = get_channel(baboon, second_channel_string)
     second_bit_place = get_bit_place(second_channel, second_bit_plate_number)
     channel_result = channel_with_watermark ^ second_bit_place
 
@@ -46,11 +46,11 @@ def svi1_encode(original_image, water_mark, color_channel, bit_plate_number,
     g = get_channel(baboon, 'green')
     b = get_channel(baboon, 'blue')
 
-    if color_channel == 'blue':
+    if color_channel_string == 'blue':
         return cv2.merge([channel_result, g, r])
-    if color_channel == 'red':
+    if color_channel_string == 'red':
         return cv2.merge([b, g, channel_result])
-    if color_channel == 'green':
+    if color_channel_string == 'green':
         return cv2.merge([b, channel_result, r])
     
     
